@@ -1,1 +1,1 @@
-# DeGLA
+# Decoupled Global-Local Alignment for Improving Compositional Understanding

@@ -8,7 +8,6 @@ import sys
 import random
 from datetime import datetime
 import sys
-sys.path.append('/home/face/kaichengyang/xiaoxinghu/Enhance-FineGrained')
 import numpy as np
 import torch
 from torch import optim
@@ -35,15 +34,11 @@ from training.distributed import is_master, init_distributed_device, broadcast_o
 from training.logger import setup_logging
 from training.params import parse_args
 from training.scheduler import cosine_lr, const_lr, const_lr_cooldown
-from training.train import train_one_epoch_ceclip, train_one_epoch_negclip,evaluate,\
-                            train_one_epoch_negclip_distill,train_one_epoch_ceclip_distill,\
-                                train_one_epoch_negclip_wo_Image_branch,train_one_epoch_my_com_clip,\
-                                train_one_epoch_my_com_clip_distill
+from training.train import train_one_epoch_DeGLA,evaluate
 from training.file_utils import pt_load, check_exists, start_sync_process, remote_sync
 
 
 LATEST_CHECKPOINT_NAME = "epoch_latest.pt"
-# os.environ['CUDA_VISIBLE_DEVICES'] = '1'  
 
 def random_seed(seed=42, rank=0):
     torch.manual_seed(seed + rank)
@@ -72,20 +67,10 @@ def get_latest_checkpoint(path: str, remote : bool):
     return None
 
 
-training_method = {
-    "my_com_clip_distill":train_one_epoch_my_com_clip_distill,
-    "my_com_clip":train_one_epoch_my_com_clip,
-    "ceclip":train_one_epoch_ceclip,
-    "ceclip_distill":train_one_epoch_ceclip_distill,
-    "negclip": train_one_epoch_negclip,
-    "negclip_distill": train_one_epoch_negclip_distill,
-    "negclip_wo_image_branch":train_one_epoch_negclip_wo_Image_branch
-}
 
 
 def main(args):
     args = parse_args(args)
-    training_function = training_method[args.method]
     if torch.cuda.is_available():
         # This enables tf32 on Ampere GPUs which is only 8% slower than
         # float16 and almost as accurate as float32
@@ -419,7 +404,7 @@ def main(args):
         aug_cfg=args.aug_cfg,)
         
 
-            # 设置 teacher_model 的参数不参与梯度更新
+            
         for param in teacher_model.parameters():
             param.requires_grad = False
         teacher_model.eval()
@@ -431,7 +416,7 @@ def main(args):
         if is_master(args):
             logging.info(f'Start epoch {epoch}')
 
-        training_function(model, data,epoch, optimizer, scaler, scheduler, args, writer,**distill_kwargs)
+        train_one_epoch_DeGLA(model, data,epoch, optimizer, scaler, scheduler, args, writer,**distill_kwargs)
         completed_epoch = epoch + 1
 
         # Evaluation after each epoch

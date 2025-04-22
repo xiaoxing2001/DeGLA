@@ -55,18 +55,6 @@ def parse_args(args):
         default=0.1,
         help="image local weight",
     )
-    parser.add_argument(
-        "--distill_mse",
-        default=False,
-        help="distill mse",
-        action='store_true',
-    )
-    parser.add_argument(
-        "--distill_kl",
-        default=False,
-        help="distill kl",
-        action='store_true',
-    )
 
     parser.add_argument(
         "--visual_layers_to_freeze",
@@ -85,21 +73,9 @@ def parse_args(args):
         default= False,
         action = 'store_true')
     parser.add_argument(
-        "--method",
-        default='negclip',
-        type = str,
-        choices=['clip','negclip','ceclip','structure_clip','negclip_distill','ceclip_distill','negclip_wo_image_branch','my_com_clip','person','my_com_clip_distill']
-    )
-    parser.add_argument(
         "--teacher",
-        default="ViT-B-32",#自蒸馏
+        default="ViT-B-32",
         type=str
-    )
-    parser.add_argument(
-        "--distill_which",
-        default='global',
-        type = str,
-        choices=['local','global']
     )
     parser.add_argument(
         "--distill_weight",
@@ -114,20 +90,18 @@ def parse_args(args):
     parser.add_argument(
         "--ema_alpha",
         type = float,
-        default= 0.999,
+        default= 0.9996,
         )
     parser.add_argument(
         "--distill",
-        default= False,#debug
+        default= False,
         action = 'store_true')
     parser.add_argument(
         "--train-data",
-        default='/home/face/kaichengyang/xiaoxinghu/Enhance-FineGrained/data/negCLIP.json',
+        default='data/DeGLA_data.json',
         type=str,
         help="Path to file(s) with training data",
     )
-    #negclip: /home/face/kaichengyang/xiaoxinghu/neg_clip/train_neg_clip.tsv
-    #ceclip: '../data/generated_data/coco_train/'
     parser.add_argument("--frozen_visual",
         default = False,
         action = 'store_true')
@@ -154,21 +128,14 @@ def parse_args(args):
         default=None,
         help="Number of samples in dataset. Useful for webdataset if not available in info file.",
     )
-    #-----for negclip: auto--- for ceclip: npy------
     parser.add_argument(
         "--dataset-type",
-        default= 'negclip',
-        choices=["my_data","webdataset", "csv", \
+        default= 'DeGLA',
+        choices=["DeGLA","webdataset", "csv", \
                  "synthetic", "auto","npy","huggingface",\
                     "json","sdgen","person","negclip"],
         help="Which type of dataset to process."
     )
-    parser.add_argument(
-        "--neg_clip_wo_image_branch",
-        default=False,
-        action="store_true",
-        help="whether remove neg_CLIP Image branch"
-    )    
     parser.add_argument(
         "--categories",
         nargs='+',
@@ -186,48 +153,7 @@ def parse_args(args):
         action="store_true",
         help="Whether to use da examples to compute clip loss"
     )
-    parser.add_argument(
-        "--threshold-type",
-        choices=["mean", "max","fixed"],
-        default="mean",
-        help="how to compute threshold"
-    )
-    parser.add_argument(
-        "--fixed-threshold-value",
-        type=float,
-        default=10.0,
-        help="fixed threshold value"
-    )
-    parser.add_argument(
-        "--upper-bound",
-        type=int,
-        default=10,
-        help="clamp upper bound for threshold"
-    )
-    parser.add_argument(
-        "-imc",
-        "--imc-loss",
-        default=False,#TODO: 调试
-        action="store_true",
-        help="whether to use imc loss"
-    )
-    parser.add_argument(
-        "--imc-loss-weight",
-        type=float,
-        default=0.2,
-    )
-    parser.add_argument(
-        "-cmr",
-        "--cmr-loss",
-        default=False,#TODO: 调试
-        action="store_true",
-        help="Whether to use cmr loss"
-    )
-    parser.add_argument(
-        "--cmr-loss-weight",
-        type=float,
-        default=0.4,
-    )
+
     parser.add_argument(
         "--dataset-resampled",
         default=False,
@@ -286,7 +212,7 @@ def parse_args(args):
         "--workers", type=int, default=10, help="Number of dataloader workers per GPU."
     )
     parser.add_argument(
-        "--batch-size", type=int, default=64, help="Batch size per GPU."
+        "--batch-size", type=int, default=32, help="Batch size per GPU."
     )
     parser.add_argument(
         "--epochs", type=int, default=5, help="Number of epochs to train for."
@@ -295,7 +221,7 @@ def parse_args(args):
         "--epochs-cooldown", type=int, default=None,
         help="When scheduler w/ cooldown used, perform cooldown from total_epochs - cooldown_epochs onwards."
     )
-    parser.add_argument("--lr", type=float, default=5e-06, help="Learning rate.")
+    parser.add_argument("--lr", type=float, default=1e-06, help="Learning rate.")
     parser.add_argument("--beta1", type=float, default=0.9, help="Adam beta 1.")
     parser.add_argument("--beta2", type=float, default=0.98, help="Adam beta 2.")
     parser.add_argument("--eps", type=float, default=1e-06, help="Adam epsilon.")
@@ -570,14 +496,6 @@ def parse_args(args):
         default=False,
         action="store_true",
         help="If true, use image augmentation."
-    )
-    
-    #-----for negclip-----
-    parser.add_argument(
-        "--csv-hard-captions-key",
-        type=str,
-        default="neg_caption",
-        help="For csv-like datasets, the name of the key for the hard captions."
     )
     
     

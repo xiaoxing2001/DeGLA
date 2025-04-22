@@ -247,7 +247,7 @@ class CLIP(nn.Module):
         for param in self.visual.parameters():
             param.requires_grad = not enable
     def frozen_text(self, enable: bool = True):
-# 冻结文本编码器的参数
+
         for param in self.token_embedding.parameters():
             param.requires_grad = False
         for param in self.transformer.parameters():

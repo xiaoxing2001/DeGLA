@@ -33,7 +33,7 @@ except ImportError:
     hvd = None
 
 
-COCO_DATASET_ROOT = '/home/face/kaichengyang/xiaoxinghu/data/coco'
+COCO_DATASET_ROOT = 'your_coco_path'
 
 class WinogroundDataCollator_batched:
     def __init__(self):
@@ -398,241 +398,11 @@ def get_wds_dataset(args, preprocess_img, is_train, epoch=0, floor=False, tokeni
 
     return DataInfo(dataloader=dataloader, shared_epoch=shared_epoch)
 
-# class CsvDataset(Dataset):#原始的csvdataset
-#     def __init__(self, input_filename, transforms, img_key, caption_key, sep="\t", tokenizer=None):
-#         logging.debug(f'Loading csv data from {input_filename}.')
-#         df = pd.read_csv(input_filename, sep=sep)
-
-#         self.images = df[img_key].tolist()
-#         self.captions = df[caption_key].tolist()
-#         self.transforms = transforms
-#         logging.debug('Done loading data.')
-
-#         self.tokenize = tokenizer
-
-#     def __len__(self):
-#         return len(self.captions)
-
-#     def __getitem__(self, idx):
-#         images = self.transforms(Image.open(str(self.images[idx])))
-#         texts = self.tokenize([str(self.captions[idx])])[0]
-#         return images, texts
-# person related
-
-from src.training.rstpreid import RSTPReid
-from src.training.ifcgpedes import ICFGPEDES
-
-
-
-
-
-# class Person_dataset(Dataset):
-#     def __init__(self,samples_path,transforms=None,train_num_samples=None,tokenizer=None):
-
-#         self.root = '/home/face/kaichengyang/xiaoxinghu/data/person'
-#         self.json_list = os.listdir(self.root)
-#         json_list = []
-#         for json_file in self.json_list:
-#             if json_file.endswith('.json'):
-#                 json_list.append(os.path.join(self.root, json_file))
-#         self.samples = []
-#         # 加载第一个json文件
-#         self.samples = load_file(json_list[0])
-#         self.transforms = transforms
-#         self.tokenize = tokenizer
-#     def __len__(self):
-#         return len(self.samples)
-#     def __getitem__(self,index):
-#         sample = self.samples[index]
-#         # 使用字典的items()方法获取键值对
-#         image_path, text = list(sample.items())[0]
-
-#         text_blip = text['blip']
-#         text_qwen = text['qwen']
-#         image = self.transforms(Image.open(image_path).convert("RGB"))
-#         text = self.tokenize([str(text_qwen)])[0]
-#         return image, text
-class Person_dataset(Dataset):#原始的csvdataset
-    def __init__(self, input_filename, transforms, tokenizer=None):
-        logging.debug(f'Loading csv data from {input_filename}.')
-        self.dataset_dir = '/home/face/kaichengyang/tianchenggu/Person_ReID_BLIP2'
-        sub_dirs = ['data_0.json','data_1.json']#,'data_1.json','data_2.json','data_3.json'
-        # data_list = []
-        # for file_name in sub_dirs:
-        #     file_path=os.path.join(self.dataset_dir,file_name)
-        #     with open(file_path, 'r') as file:
-        #         data = json.load(file)
-        #         data_list.extend(data)
-        json_data_all=[]
-        for file_name in sub_dirs:
-            file_path=os.path.join(self.dataset_dir,file_name)
-            json_data_all.append(file_path)
-       
-        self.images = []
-        self.captions = []
-        # self.train_cap = []
-        for json_file in json_data_all:
-            input_path = os.path.join(json_file)
-            with open(input_path) as f:
-                data = json.load(f)
-            part = 'blip'
-            for item in data:
-                for key,value in item.items():
-                    if '<' in value[part] or '>'in value[part] or 'jekyll' in value[part] or len(value[part])<5:
-                        logging.info(value[part])
-                        break 
-                    self.images.append(key)
-                    self.captions.append(value[part])
-        print(len(self.images))
-        # self.images = df[img_key].tolist()
-        # self.captions = df[caption_key].tolist()
-        self.transforms = transforms
-        logging.debug('Done loading data.')
-        
-        # self.tokenize = tokenizer
-
-    def __len__(self):
-        return len(self.captions)
-
-    def __getitem__(self, idx):
-        images = self.transforms(Image.open(os.path.join(str(self.images[idx]))))
-        texts = tokenize([str(self.captions[idx])])[0]
-        return images, texts
-
 def load_file(ann_file):
     with open(ann_file, 'r', encoding='utf-8') as f:
         # return [json.loads(line) for line in f]
         return json.load(f)
-
-
-class CsvDataset_wo_image_branch(Dataset):
-    def __init__(self, input_filename, transforms, img_key, caption_key, hard_captions_key, sep="\t",root = '/home/face/kaichengyang/xiaoxinghu/data'):
-        self.root = root
-        logging.debug(f'Loading csv data from {input_filename}.')
-        df = pd.read_csv(input_filename, sep=sep, converters={"neg_caption":ast.literal_eval, "neg_image":ast.literal_eval})
-
-        self.images = df[img_key].tolist()
-        self.captions = df[caption_key].tolist()
-        self.hard_captions = df[hard_captions_key].tolist()
-        self.hard_images = df["neg_image"].tolist()
-        self.transforms = transforms
-        logging.debug('Done loading data.')
-
-    def __len__(self):
-        return len(self.captions)
-
-    def __getitem__(self, idx):
-        images = self.transforms(Image.open(os.path.join(self.root,str(self.images[idx]))))#选择image
-        texts = tokenize([str(self.captions[idx])])[0]#选择+caption
-
-        chosen_caption = random.choice(self.hard_captions[idx])#选择-caption
-        hard_captions = tokenize([str(chosen_caption)])[0]
-
-        chose_image_index = random.choice(self.hard_images[idx])
-
-
-        chosen_caption = random.choice(self.hard_captions[chose_image_index])#选择-image对应的-caption
-
-        return images, texts, hard_captions
-    
-
-class CsvDataset(Dataset):
-    def __init__(self, input_filename, transforms, img_key, caption_key, hard_captions_key, sep="\t",root = '/home/face/kaichengyang/xiaoxinghu/data'):
-        self.root = root
-        logging.debug(f'Loading csv data from {input_filename}.')
-        df = pd.read_csv(input_filename, sep=sep, converters={"neg_caption":ast.literal_eval, "neg_image":ast.literal_eval})
-
-        self.images = df[img_key].tolist()
-        self.captions = df[caption_key].tolist()
-        self.hard_captions = df[hard_captions_key].tolist()
-        self.hard_images = df["neg_image"].tolist()
-        self.transforms = transforms
-        logging.debug('Done loading data.')
-
-    def __len__(self):
-        return len(self.captions)
-
-    def __getitem__(self, idx):
-        images = self.transforms(Image.open(os.path.join(self.root,str(self.images[idx]))))#选择image
-        texts = tokenize([str(self.captions[idx])])[0]#选择+caption
-
-        chosen_caption = random.choice(self.hard_captions[idx])#选择-caption
-        hard_captions = tokenize([str(chosen_caption)])[0]
-
-        chose_image_index = random.choice(self.hard_images[idx])
-
-        new_images = self.transforms(Image.open(os.path.join(self.root,str(self.images[chose_image_index]))))#选择-image
-        new_texts = tokenize([str(self.captions[chose_image_index])])[0]#选择-image对应的caption
-
-        chosen_caption = random.choice(self.hard_captions[chose_image_index])#选择-image对应的-caption
-        new_hard = tokenize([str(chosen_caption)])[0]
-
-        return images, new_images, texts, new_texts, hard_captions, new_hard
-
-
-class NpyDataset(Dataset):
-    def __init__(self,samples_path,transforms=None,train_num_samples=None,tokenizer=None,split=None):
-
-        if split==None:
-            if 'val' in samples_path:
-                self.split='val'
-            else:
-                self.split='train'
-        else:
-            self.split=split
-
-
-        if 'coco' in samples_path:
-            self.data='coco'
-        else:
-            self.data='cc3m'
-        if os.path.isdir(samples_path):
-            # load and merge all splited files in the dir
-            data_file_splits=glob.glob(os.path.join(samples_path,'*.npy'))
-            print(f'merging {len(data_file_splits)} splied files from {samples_path}')
-            self.samples=[]
-            for file_split in data_file_splits:
-                self.samples.extend(self.loadList(file_split))
-        else:
-            # load single splited file fiven the path
-            self.samples=self.loadList(samples_path)
-        if train_num_samples:
-            self.samples=self.samples[:train_num_samples]
-        self.transforms = transforms
-        self.tokenize = tokenizer
-    def loadList(self,file_path):
-        # the filename should mention the extension '.npy'
-        tempNumpyArray=np.load(file_path,allow_pickle=True)
-        return tempNumpyArray.tolist()
-    def __len__(self):
-        return len(self.samples)
-    def __getitem__(self,index):
-        captions=torch.stack([self.tokenize([str(self.samples[index]['caption'])])[0],
-        self.tokenize([str(self.samples[index]['relation_aug_caption'])])[0],
-        self.tokenize([str(self.samples[index]['adj_aug_caption'])])[0],
-        self.tokenize([str(self.samples[index]['noun_aug_caption'])])[0],
-        self.tokenize([str(self.samples[index]['verb_aug_caption'])])[0]])
-        if self.data=='coco':
-            image_id=self.samples[index]['image_id']
-            data_split='train2014' if self.split=='train' else "val2014"
-            image_path=os.path.join(COCO_DATASET_ROOT,data_split,f"COCO_{data_split}_{'0'*(12-len(str(image_id)))}{image_id}.jpg")
-            image = self.transforms(Image.open(image_path).convert("RGB"))
-        else:
-            image = self.transforms(Image.open(str(self.samples[index]['image_path'])).convert("RGB"))
-        valid_caption_mask=torch.tensor(self.samples[index]['valid_caption'])
-        return image, captions, valid_caption_mask
-
-class HardNegative_Collate:
-    def __call__(self,batch):
-        img=torch.stack([example[0] for example in batch])#在新维度拼接图像
-        ture_caption=torch.stack([example[1][0] for example in batch])#将真实的描述拼接在一起
-        hard_negative=torch.cat([example[1][1:] for example in batch])#将负样本拼在一起
-        text=torch.cat([ture_caption,hard_negative])#
-        valid_caption_mask=torch.stack([example[2] for example in batch])
-        return img,text,valid_caption_mask
-
-#-----my dataset
-class COM_COCO(Dataset):
+class DeGLA_dataset(Dataset):
     def __init__(self,samples_path,transforms=None,train_num_samples=None,tokenizer=None):
         self.transforms = transforms
         self.tokenize = tokenizer
@@ -641,19 +411,7 @@ class COM_COCO(Dataset):
         self.samples = data
     def __len__(self):
         return len(self.samples)
-    # def __getitem__(self,index):
-        
-    #     #加载图片
-    #     image_id = self.samples[index]['image_id']
-    #     image_path = os.path.join(COCO_DATASET_ROOT,'train2014',f"COCO_train2014_{'0'*(12-len(str(image_id)))}{image_id}.jpg")
-    #     image = self.transforms(Image.open(image_path).convert("RGB"))
-    #     text = self.tokenize([str(self.samples[index]['original'])])[0]
-    #     neg_text = random.choice(self.samples[index]['level_0'])
-    #     text_reshuffle = self.tokenize(neg_text)[0]
-
-    #     return image,text,text_reshuffle
     def __getitem__(self,index):
-        #加载图片
         image_id = self.samples[index]['image_id']
         image_path = os.path.join(COCO_DATASET_ROOT,'train2014',f"COCO_train2014_{'0'*(12-len(str(image_id)))}{image_id}.jpg")
         image = self.transforms(Image.open(image_path).convert("RGB"))
@@ -666,60 +424,16 @@ class COM_COCO(Dataset):
         neg_text3 = self.tokenize([str(neg_text3)])[0]
         neg_text4 = self.samples[index]['enhanced'][3]
         neg_text4 = self.tokenize([str(neg_text4)])[0]
-        # neg_text5 = self.samples[index]['enhanced'][4]
-        # neg_text5 = self.tokenize([str(neg_text5)])[0]
-        # neg_text = torch.stack([neg_text1,neg_text2,neg_text3,neg_text4])
         neg_text = torch.stack([neg_text1,neg_text2,neg_text3,neg_text4])
         return image,text,neg_text
 
-class NegCLIP(Dataset):
-    def __init__(self,samples_path,transforms=None,train_num_samples=None,tokenizer=None):
-        self.transforms = transforms
-        self.tokenize = tokenizer
-        with open(samples_path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-        self.samples = data
-    def __len__(self):
-        return len(self.samples)
-    def __getitem__(self,index):
-        #加载图片
-        image_id = self.samples[index]['image_id']
-        image_path = os.path.join(COCO_DATASET_ROOT,'train2014',f"COCO_train2014_{'0'*(12-len(str(image_id)))}{image_id}.jpg")
-        image = self.transforms(Image.open(image_path).convert("RGB"))
-        text = self.tokenize([str(self.samples[index]['caption'])])[0]
-        chosen_caption = random.choice(self.samples[index]['enhanced'])#选择-caption
-        neg_text = self.tokenize([str(chosen_caption)])[0]
-        return image,text,neg_text
 
-def get_person_dataset(args, preprocess_fn, is_train, epoch=0, tokenizer=None):
+
+
+def get_DeGLA(args, preprocess_fn, is_train, epoch=0, tokenizer=None):
     input_filename = args.train_data
     assert input_filename
-    dataset = Person_dataset(
-        input_filename,
-        preprocess_fn,
-        tokenizer=tokenizer)
-    num_samples = len(dataset)
-    sampler = DistributedSampler(dataset) if args.distributed and is_train else None
-    shuffle = is_train and sampler is None
-    dataloader = DataLoader(
-        dataset,
-        batch_size=args.batch_size,
-        shuffle=shuffle,
-        num_workers=args.workers,
-        pin_memory=True,
-        sampler=sampler,
-        drop_last=is_train,
-    )
-    dataloader.num_samples = num_samples
-    dataloader.num_batches = len(dataloader)
-    return DataInfo(dataloader, sampler)
-
-
-
-def get_my_dataset(args, preprocess_fn, is_train, epoch=0, tokenizer=None):
-    input_filename = args.train_data
-    assert input_filename
-    dataset = COM_COCO(
+    dataset = DeGLA_dataset(
         input_filename,
         preprocess_fn,
         tokenizer=tokenizer)
@@ -741,95 +455,6 @@ def get_my_dataset(args, preprocess_fn, is_train, epoch=0, tokenizer=None):
     return DataInfo(dataloader, sampler)
 
 
-def get_negclip_dataset(args, preprocess_fn, is_train, epoch=0, tokenizer=None):
-    input_filename = args.train_data
-    assert input_filename
-    dataset = NegCLIP(
-        input_filename,
-        preprocess_fn,
-        tokenizer=tokenizer)
-    num_samples = len(dataset)
-    sampler = DistributedSampler(dataset) if args.distributed and is_train else None
-    shuffle = is_train and sampler is None
-
-    dataloader = DataLoader(
-        dataset,
-        batch_size=args.batch_size,
-        shuffle=shuffle,
-        num_workers=args.workers,
-        pin_memory=True,
-        sampler=sampler,
-        drop_last=is_train,
-    )
-    dataloader.num_samples = num_samples
-    dataloader.num_batches = len(dataloader)
-    return DataInfo(dataloader, sampler)
-def get_npy_dataset(args, preprocess_fn, is_train, epoch=0, tokenizer=None):
-    input_filename = args.train_data if is_train else args.val_data
-    assert input_filename
-    dataset = NpyDataset(
-        input_filename,
-        preprocess_fn,
-
-        train_num_samples=args.train_num_samples
-
-    )
-    num_samples = len(dataset)
-    sampler = DistributedSampler(dataset) if args.distributed and is_train else None
-    shuffle = is_train and sampler is None
-    collate=HardNegative_Collate()
-    dataloader = DataLoader(
-        dataset,
-        batch_size=args.batch_size,
-        shuffle=shuffle,
-        num_workers=args.workers,
-        pin_memory=True,
-        sampler=sampler,
-        drop_last=is_train,
-        collate_fn=collate
-    )
-    dataloader.num_samples = num_samples
-    dataloader.num_batches = len(dataloader)
-
-    return DataInfo(dataloader, sampler)
-def get_csv_dataset(args, preprocess_fn, is_train, epoch=0, tokenizer=None):
-    input_filename = args.train_data if is_train else args.val_data
-    assert input_filename
-    if args.neg_clip_wo_image_branch:
-        dataset = CsvDataset_wo_image_branch(
-            input_filename,
-            preprocess_fn,
-            img_key=args.csv_img_key,
-            caption_key=args.csv_caption_key,
-            hard_captions_key=args.csv_hard_captions_key,
-            sep=args.csv_separator,
-        )        
-    else:
-        dataset = CsvDataset(
-            input_filename,
-            preprocess_fn,
-            img_key=args.csv_img_key,
-            caption_key=args.csv_caption_key,
-            hard_captions_key=args.csv_hard_captions_key,
-            sep=args.csv_separator,
-        )
-    num_samples = len(dataset)
-    sampler = DistributedSampler(dataset) if args.distributed and is_train else None
-    shuffle = is_train and sampler is None
-
-    dataloader = DataLoader(
-        dataset,
-        batch_size=args.batch_size,
-        shuffle=shuffle,
-        num_workers=args.workers,
-        pin_memory=True,
-        sampler=sampler,
-        drop_last=is_train,
-    )
-    dataloader.num_samples = num_samples
-    dataloader.num_batches = len(dataloader)
-
-    return DataInfo(dataloader, sampler)
 
 class Coco_Collate:
     def __call__(self,batch):
@@ -937,59 +562,14 @@ def get_synthetic_dataset(args, preprocess_fn, is_train, epoch=0, tokenizer=None
     dataloader.num_batches = len(dataloader)
 
     return DataInfo(dataloader, sampler)
-def get_huggingface_dataset(args, preprocess_fn, is_train, epoch=0, tokenizer=None):
-    if args.val_data=='winoground':
-        dataset=Winoground(transforms=preprocess_fn, tokenizer=tokenizer)
-        collate=Winoground_Collate()
-    else:
-        raise ValueError("must specify dataset name for huggingface dataset type")
-    num_samples = len(dataset)
-    sampler = DistributedSampler(dataset) if args.distributed and is_train else None
-    shuffle = is_train and sampler is None
 
-    dataloader = DataLoader(
-        dataset,
-        batch_size=args.batch_size,
-        shuffle=shuffle,
-        pin_memory=True,
-        sampler=sampler,
-        drop_last=is_train,
-        collate_fn=collate
-    )
-    dataloader.num_samples = num_samples
-    dataloader.num_batches = len(dataloader)
-
-    return DataInfo(dataloader, sampler)
 
 
 def get_dataset_fn(data_path, dataset_type):
-    if dataset_type=='my_data':
-        return get_my_dataset
-    elif dataset_type=='person':
-        return get_person_dataset
-    elif dataset_type=='huggingface' or data_path=="winoground":
-        return get_huggingface_dataset
+    if dataset_type=='DeGLA':
+        return get_DeGLA
     elif dataset_type == "webdataset":
         return get_wds_dataset
-    elif dataset_type == "csv":
-        return get_csv_dataset
-    elif dataset_type == "synthetic":
-        return get_synthetic_dataset
-    elif dataset_type == "npy":
-        return get_npy_dataset
-    elif dataset_type=="json": 
-        return get_json_dataset
-    elif dataset_type=='negclip':
-        return get_negclip_dataset
-    elif dataset_type == "auto":
-        ext = data_path.split('.')[-1]
-        if ext in ['csv', 'tsv']:
-            return get_csv_dataset
-        elif ext in ['tar']:
-            return get_wds_dataset
-        else:
-            raise ValueError(
-                f"Tried to figure out dataset type, but failed for extension {ext}.")
    
     else:
         raise ValueError(f"Unsupported dataset type: {dataset_type}")

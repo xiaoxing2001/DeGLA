@@ -9,6 +9,10 @@ Jun Wang,</span>
 Haoran Xu,</span>
 Ziyong Feng,</span>
 <a href="https://scholar.google.com.hk/citations?user=3nMDEBYAAAAJ&hl=zh-CN&oi=ao">Yupei Wang</a></span>
+
+## 📖 Introduction
+DeGLA is a novel fine-tuning framework designed to enhance CLIP's compositional understanding. Within this framework, we focus on improving the model's compositional understanding while mitigating the catastrophic forgetting of pre-trained knowledge that often occurs during fine-tuning. To achieve this, we introduce the DeGLA framework, which features a more effective negative sample generation pipeline and innovative training framework. Experimental results demonstrate that our approach establishes a new SOTA in both compositional understanding and general performance. For any inquiries, please contact xiaoxinghhh@gmail.com or raise an issue. Thank you for your attention.
+
 ## 📣 News
 
 - [2025/04/xx]:✨The training code and pertrained weight of DeGLA have been released.
@@ -49,14 +53,14 @@ pip install -r requirements.txt
 Our CUDA version is 12.1. You can adjust the versions of the relevant libraries, such as PyTorch, according to your CUDA version.
 
 ## Training
-Our hard negative data is released at [Baidu Yun](),[GoogleDrive]() and [Huggingface]().
+Our hard negative data is released at [Baidu Yun](https://pan.baidu.com/s/18vRaelcHJhYWM_sU3HJrvA?pwd=aixt),[GoogleDrive](https://drive.google.com/file/d/1Jd_2IVUwRuEXSDwkVlB8QwshyjSwpTy9/view?usp=sharing) and [Huggingface](https://huggingface.co/datasets/wsdwJohn1231/DeGLA/tree/main).
 ```bash
 git clone https://github.com/xiaoxing2001/DeGLA
 cd DeGLA
 ./scripts/train_DeGLA.sh
 ```
 ## Evaluation
-Our weights is released at [Baidu Yun](),[GoogleDrive]() and [Huggingface]().
+Our weights is released at [Baidu Yun](https://pan.baidu.com/s/1qMbwyeAc6W3TFznGdlEkiQ?pwd=dmvd),[GoogleDrive](https://drive.google.com/file/d/1YHiBjWroaw8BkN51NgCvfNafv4992XoT/view?usp=sharing) and [Huggingface](https://huggingface.co/wsdwJohn1231/DeGLA/tree/main).
  Our compositional reansoning evaluation is based on other repositories. For ARO, please visit [ARO](https://github.com/mertyg/vision-language-models-are-bows). For SugarCrepe, please visit [SugarCrepe](https://github.com/RAIVNLab/sugar-crepe). For VALSE, please visit [VALSE](https://github.com/Heidelberg-NLP/VALSE).
 ## Results
 - ### VALSE

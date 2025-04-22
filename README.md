@@ -16,7 +16,11 @@ Ziyong Feng,</span>
 ## 💡 Highlights
 We propose a simple yet effective negative caption generation pipeline that harnesses the in-context learning capability of Large Language Models (LLMs) to produce high-quality negative captions, facilitating hard negative-based fine-tuning
 
-![teaser](assets/neg_data.png)
+
+<p align="center">
+    <img src="assets/neg_data.png" width="700" height="700" alt="Description">
+</p>
+
 
 We introduce the DeGLA framework, which employs a self-
 distillation mechanism within the global alignment to maintain
@@ -24,7 +28,10 @@ the model’s inherent general comprehension capabilities. Addi-
 tionally, it combines Image-Grounded Contrast (IGC) loss and
 Text-Grounded Contrast (TGC) loss to improve vision-language
 compositional understanding
-![teaser](assets/training_framework.png)
+
+<p align="center">
+    <img src="assets/training_framework.png" width="700" height="500" alt="Description">
+</p>
 
 
 ## 🎨 TODO
@@ -53,13 +60,25 @@ Our weights is released at [Baidu Yun](),[GoogleDrive]() and [Huggingface]().
  Our compositional reansoning evaluation is based on other repositories. For ARO, please visit [ARO](https://github.com/mertyg/vision-language-models-are-bows). For SugarCrepe, please visit [SugarCrepe](https://github.com/RAIVNLab/sugar-crepe). For VALSE, please visit [VALSE](https://github.com/Heidelberg-NLP/VALSE).
 ## Results
 - ### VALSE
-![teaser](assets/VALSE.png)
+<p align="center">
+    <img src="assets/VALSE.png" >
+</p>
+
 - ### SugarCrepe
-![teaser](assets/SugarCrepe.png)
+<p align="center">
+    <img src="assets/SugarCrepe.png" >
+</p>
+
 - ### ARO
-![teaser](assets/ARO.png)
-- ### Zero-shot image classification
-![teaser](assets/zero-shot.png)
+<p align="center">
+    <img src="assets/ARO.png" width="600" height="350">
+</p>
+
+- ### Zero-shot Classification
+<p align="center">
+    <img src="assets/zero-shot.png" >
+</p>
+
 
 
 

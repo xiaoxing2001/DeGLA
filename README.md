@@ -83,9 +83,6 @@ Our weights is released at [Baidu Yun](https://pan.baidu.com/s/1qMbwyeAc6W3TFznG
     <img src="assets/zero-shot.png" >
 </p>
 
-
-
-
 ## Acknowledgements
 This project is based on [CE-CLIP](https://github.com/lezhang7/Enhance-FineGrained),[NegCLIP](https://github.com/vinid/neg_clip),[openclip](https://github.com/mlfoundations/open_clip), thanks for their works.
 

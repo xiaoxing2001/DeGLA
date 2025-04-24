@@ -93,7 +93,15 @@ This project is released under the MIT license. Please see the [LICENSE](LICENSE
 ## 📖 Citation
 If you find this repository useful, please use the following BibTeX entry for citation.
 ```latex
-arxiv_link
+@misc{hu2025decoupledgloballocalalignmentimproving,
+      title={Decoupled Global-Local Alignment for Improving Compositional Understanding}, 
+      author={Xiaoxing Hu and Kaicheng Yang and Jun Wang and Haoran Xu and Ziyong Feng and Yupei Wang},
+      year={2025},
+      eprint={2504.16801},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2504.16801}, 
+}
 ```
 
 <!-- ## 🌟Star History

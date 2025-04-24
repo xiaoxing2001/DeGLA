@@ -16,7 +16,7 @@ DeGLA is a novel fine-tuning framework designed to enhance CLIP's compositional 
 ## 📣 News
 
 - [2025/04/xx]:✨The training code and pertrained weight of DeGLA have been released.
-- [2025/04/xx]:✨The paper of [DeGLA](xx) is submitted to arXiv.
+- [2025/04/xx]:✨The paper of [DeGLA](https://arxiv.org/abs/2504.16801) is submitted to arXiv.
 ## 💡 Highlights
 We propose a simple yet effective negative caption generation pipeline that harnesses the in-context learning capability of Large Language Models (LLMs) to produce high-quality negative captions, facilitating hard negative-based fine-tuning
 

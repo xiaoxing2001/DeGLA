@@ -39,9 +39,9 @@ compositional understanding
 
 
 ## 🎨 TODO
-- [ ] Release training code
-- [ ] Release model weight
-- [ ] Release training data
+- [x] Release training code
+- [x] Release model weight
+- [x] Release training data
 
 ## Environment installation
 Our work is based on [openclip](https://github.com/mlfoundations/open_clip),[NegCLIP](https://github.com/vinid/neg_clip), [CE-CLIP](https://github.com/lezhang7/Enhance-FineGrained), you can refer to these repository for environment setup, then modify them according to our code and proceed with the train. Alternatively, you can refer to the environment detailed below:

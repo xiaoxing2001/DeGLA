@@ -14,7 +14,7 @@ Ziyong Feng,</span>
 DeGLA is a novel fine-tuning framework designed to enhance CLIP's compositional understanding. Within this framework, we focus on improving the model's compositional understanding while mitigating the catastrophic forgetting of pre-trained knowledge that often occurs during fine-tuning. To achieve this, we introduce the DeGLA framework, which features a more effective negative sample generation pipeline and innovative training framework. Experimental results demonstrate that our approach establishes a new SOTA in both compositional understanding and general performance. For any inquiries, please contact xiaoxinghhh@gmail.com or raise an issue. Thank you for your attention.
 
 ## 📣 News
-
+- [2025/07/05]:✨DeGLA has been accepted by ACM MM2025!
 - [2025/04/24]:✨The training code and pertrained weight of DeGLA have been released.
 - [2025/04/24]:✨The paper of [DeGLA](https://arxiv.org/abs/2504.16801) is submitted to arXiv.
 ## 💡 Highlights

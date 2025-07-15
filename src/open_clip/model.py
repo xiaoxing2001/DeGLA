@@ -64,7 +64,6 @@ def get_cast_dtype(precision: str):
         cast_dtype = torch.float16
     return cast_dtype
 
-
 def _build_vision_tower(
         embed_dim: int,
         vision_cfg: CLIPVisionCfg,

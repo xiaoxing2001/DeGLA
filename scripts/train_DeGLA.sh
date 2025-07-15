@@ -30,6 +30,7 @@ else
     --image_local_weight 0.1\
     --distill \
     --distill_weight 0.005 \
+    --neg_text 4\
     --distill_mse \
     --teacher ViT-B-32 \
     --train-data $train_data \

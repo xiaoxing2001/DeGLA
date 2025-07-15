@@ -102,8 +102,8 @@ class CLIPloss_DeGLA(nn.Module):
     def forward(self, image_features, text_features, logit_scale,teacher_image_features,teacher_text_features):
         device = image_features.device
         if self.world_size > 1:
-            all_image_features,all_text_features = gather_features_negclip(image_features,text_features,self.local_loss,self.gather_with_grad,self.rank,self.world_size,self.use_horovod)
-            all_teacher_image_features,all_teacher_text_features = gather_features_negclip(teacher_image_features,teacher_text_features,self.local_loss,self.gather_with_grad,self.rank,self.world_size,self.use_horovod)
+            all_image_features,all_text_features = gather_features_degla(image_features,text_features,self.local_loss,self.gather_with_grad,self.rank,self.world_size,self.use_horovod)
+            all_teacher_image_features,all_teacher_text_features = gather_features_degla(teacher_image_features,teacher_text_features,self.local_loss,self.gather_with_grad,self.rank,self.world_size,self.use_horovod)
             gt_teacher_text = all_teacher_text_features[:all_teacher_image_features.shape[0]]
         else:
             all_image_features = image_features
@@ -173,7 +173,7 @@ class CLIPloss_DeGLA(nn.Module):
     def get_mse_distill_loss(self,image_features,text_features,t_image_features,t_text_features):
         mse_distill_loss = F.mse_loss(image_features,t_image_features,reduction='sum')+F.mse_loss(text_features,t_text_features,reduction='sum')
         return mse_distill_loss
-def gather_features_negclip(
+def gather_features_degla(
         image_features,
         text_features,
         local_loss=False,
